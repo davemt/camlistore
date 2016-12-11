@@ -106,6 +106,16 @@ cam.SearchSession.prototype.loadMoreResults = function() {
 	c();
 };
 
+cam.SearchSession.prototype.loadAllResults = function() {
+  while (this.continuation_) {
+    var c = this.continuation_;
+    this.continuation_ = null;
+    c();
+
+    alert('loading more...');
+  }
+}
+
 // Returns true if it is known that all data which can be loaded for this query has been.
 cam.SearchSession.prototype.isComplete = function() {
 	return this.isComplete_;

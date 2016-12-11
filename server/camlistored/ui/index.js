@@ -726,6 +726,28 @@ cam.IndexPage = React.createClass({
 		}.bind(this));
 	},
 
+  // TODO: what to do about lastCheckedIndex_?
+  // TODO: can search results change resulting in messed up selection?
+  // TODO: in blob_item_container_react.js handleCheckClick_ calls forceUpdate
+  //  -- why?
+  handleSelectAll_: function() {
+		if (!this.childSearchSession_) {
+      // This can happen when a user types a raw (JSON) query that is invalid.
+			return null;
+		}
+    this.childSearchSession_.loadAllResults();
+    var blobs = this.childSearchSession_.getCurrentResults().blobs;
+    var newSelection = {};
+
+    blobs.forEach(function(b) {
+      newSelection[b.blob] = true;
+    });
+
+    this.lastCheckedIndex_ = blobs.length - 1;
+
+    this.setSelection_(newSelection);
+  },
+
 	handleClearSelection_: function() {
 		this.setSelection_({});
 	},
@@ -981,6 +1003,16 @@ cam.IndexPage = React.createClass({
 		);
 	},
 
+  getSelectAll_: function() {
+    return React.DOM.button(
+      {
+        key:'selectall',
+        onClick:this.handleSelectAll_
+      },
+      'Select all'
+    );
+  },
+
 	getClearSelectionItem_: function() {
 		return React.DOM.button(
 			{
@@ -1074,6 +1106,7 @@ cam.IndexPage = React.createClass({
 						}
 					].filter(goog.functions.identity),
 					selectionControls: [
+						this.getSelectAll_(),
 						this.getClearSelectionItem_(),
 						this.getCreateSetWithSelectionItem_(),
 						this.getSelectAsCurrentSetItem_(),
